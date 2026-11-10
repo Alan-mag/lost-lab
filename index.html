@@ -39,7 +39,8 @@
     /* Header */
     header { display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; padding: 24px var(--gutter); border-bottom: 1px solid var(--line); }
     .brand { font-weight: 800; font-size: 18px; letter-spacing: 0.04em; text-decoration: none; }
-    nav { display: flex; gap: 28px; flex-wrap: wrap; }
+    nav { display: flex; gap: 28px; flex-wrap: wrap; align-items: center; }
+    nav a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 !important; }
     nav a, .socials a { color: var(--muted); text-decoration: none; padding: 12px 0; }
     nav a:hover, .socials a:hover { color: var(--ink); }
 
@@ -96,6 +97,9 @@
     .filters button:focus-visible, nav button:focus-visible, .close:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
     .card[hidden] { display: none; }
     .grid { row-gap: 40px; }
+    .social { display: inline-flex; align-items: center; gap: 6px; padding-left: 28px !important; padding-right: 0 !important; border-left: 1px solid var(--line); }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    @media (max-width: 600px) { .social { padding-left: 0 !important; border-left: 0; } }
     nav button { background: none; border: 0; padding: 12px 0; min-height: 44px; font: inherit; letter-spacing: inherit; text-transform: inherit; color: var(--muted); cursor: pointer; }
     nav button:hover { color: var(--ink); }
 
@@ -140,6 +144,7 @@
       <a href="#work">Work</a>
       <button type="button" data-open="about">About</button>
       <button type="button" data-open="contact">Contact</button>
+      <a class="social" href="https://www.instagram.com/lostlab.studio/" target="_blank" rel="noopener">Instagram<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M2 8 8 2M3.5 2H8v4.5"/></svg><span class="sr-only"> (opens in a new tab)</span></a>
     </nav>
   </header>
 
@@ -218,7 +223,7 @@
     <div class="socials mono">
       <a href="https://github.com/Alan-mag">GitHub</a>
       <a href="#">[itch.io]</a>
-      <a href="#">[Instagram]</a>
+      <a href="https://www.instagram.com/lostlab.studio/" target="_blank" rel="noopener">Instagram</a>
     </div>
     <form method="dialog"><button class="close mono">Close</button></form>
   </dialog>

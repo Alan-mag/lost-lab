@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lost Lab</title>
+  <meta name="description" content="Lost Lab is a small digital studio in Seattle making games, civic tech, comics and short films.">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" type="image/png" href="assets/logo_body.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* Single dark theme, matching the Godot splash. Hairline rules echo the logo. */
+    :root {
+      --bg: #000000;
+      --ink: #F2F2F2;
+      --muted: #A6A6A6;
+      --faint: #8C8C8C;
+      --line: #222222;
+      --line-strong: #333333;
+      --display: 'Jost', 'Futura PT', Futura, system-ui, sans-serif;
+      --mono: 'IBM Plex Mono', ui-monospace, monospace;
+      --gutter: clamp(20px, 4vw, 56px);
+      --slide: 160px; /* replaced at runtime with the measured value */
+      color-scheme: dark;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--display); -webkit-font-smoothing: antialiased; }
+    a { color: var(--ink); text-underline-offset: 6px; text-decoration-thickness: 1px; }
+    a:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
+    h2 { margin: 0; font-weight: 500; font-size: 40px; text-wrap: balance; }
+    p { margin: 0; }
+    .mono { font-family: var(--mono); font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; }
+    .muted { color: var(--muted); }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 96px var(--gutter); border-top: 1px solid var(--line); }
+
+    /* Header */
+    header { display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; padding: 24px var(--gutter); border-bottom: 1px solid var(--line); }
+    .brand { font-weight: 800; font-size: 18px; letter-spacing: 0.04em; text-decoration: none; }
+    nav { display: flex; gap: 28px; flex-wrap: wrap; }
+    nav a, .socials a { color: var(--muted); text-decoration: none; padding: 12px 0; }
+    nav a:hover, .socials a:hover { color: var(--ink); }
+
+    /* Hero + logo animation (timings from SplashScreen.tscn / .gd) */
+    .hero { min-height: 640px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 48px; padding: 96px 20px; overflow: hidden; }
+    .lockup { display: flex; align-items: center; gap: 24px; }
+    .logo { position: relative; width: 154px; height: 202px; flex: 0 0 auto; }
+    .logo img { display: block; }
+    .logo .body { position: absolute; inset: 0; width: 154px; height: 202px; }
+    .eyes { position: absolute; left: 47px; top: 62px; width: 59px; height: 32px; }
+    .eyes img, .eyes div { width: 59px; height: 32px; }
+    .word { font-weight: 800; font-size: 64px; letter-spacing: 0.02em; line-height: 1; white-space: nowrap; }
+    .tagline { max-width: 32rem; text-align: center; font-size: 20px; line-height: 1.6; color: var(--muted); }
+
+    /* Before fonts load, hold the first frame so nothing jumps. */
+    .hero:not(.play) .rise { opacity: 0; }
+    .hero:not(.play) .word, .hero:not(.play) .tagline { opacity: 0; }
+    .hero:not(.play) .lockup { transform: translateX(var(--slide)); }
+
+    @keyframes rise { 0% { transform: translateY(24px); opacity: 0 } 9% { opacity: 1 } 22.7% { transform: translateY(-10px) } 31.8% { transform: translateY(4px) } 38.6% { transform: translateY(-2.4px) } 45.5%, 100% { transform: translateY(0); opacity: 1 } }
+    @keyframes blink2 { 0%, 45.5% { transform: scaleY(1) } 50% { transform: scaleY(.08) } 55.5%, 79.5% { transform: scaleY(1) } 85% { transform: scaleY(.08) } 90.5%, 100% { transform: scaleY(1) } }
+    @keyframes idle { 0%, 94.4% { transform: scaleY(1) } 95% { transform: scaleY(.08) } 95.6%, 100% { transform: scaleY(1) } }
+    @keyframes slide { from { transform: translateX(var(--slide)) } to { transform: translateX(0) } }
+    @keyframes fade { from { opacity: 0 } to { opacity: 1 } }
+
+    .play .lockup  { animation: slide 1.2s cubic-bezier(.25, 1, .5, 1) 2.2s both; }
+    .play .word    { animation: fade .45s linear 2.2s both; }
+    .play .rise    { animation: rise 2.2s cubic-bezier(.45, 0, .55, 1) both; }
+    .play .blink2  { animation: blink2 2.2s linear both; }
+    .play .idle    { animation: idle 3.6s linear 3.4s infinite; }
+    .play .tagline { animation: fade .8s ease-out 3.2s both; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hero .lockup, .hero .word, .hero .rise, .hero .blink2, .hero .idle, .hero .tagline { animation: none !important; opacity: 1 !important; transform: none !important; }
+    }
+
+    /* Work */
+    .section-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 40px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
+    .card { display: flex; flex-direction: column; gap: 16px; text-decoration: none; }
+    .thumb { aspect-ratio: 4 / 3; border: 1px solid var(--line-strong); border-radius: 120px 120px 4px 4px; overflow: hidden; display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 12px; color: var(--faint); transition: border-color .2s; }
+    .thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .card:hover .thumb { border-color: var(--ink); }
+    .card-title { font-size: 20px; font-weight: 500; }
+    .card-meta { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+
+    /* Filters */
+    .filters { display: flex; gap: 8px; flex-wrap: wrap; }
+    .filters button { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: 999px; border: 1px solid var(--line-strong); background: transparent; color: #C9C9C9; font-family: var(--mono); font-size: 13px; cursor: pointer; transition: border-color .2s, background .2s, color .2s; }
+    .filters button:hover { border-color: var(--ink); color: var(--ink); }
+    .filters button span { color: var(--faint); font-variant-numeric: tabular-nums; }
+    .filters button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #000; }
+    .filters button[aria-pressed="true"] span { color: #555; }
+    .filters button:focus-visible, nav button:focus-visible, .close:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
+    .card[hidden] { display: none; }
+    .grid { row-gap: 40px; }
+    nav button { background: none; border: 0; padding: 12px 0; min-height: 44px; font: inherit; letter-spacing: inherit; text-transform: inherit; color: var(--muted); cursor: pointer; }
+    nav button:hover { color: var(--ink); }
+
+    /* About / Contact pop-ups: arch-topped, like the logo */
+    dialog { width: min(520px, calc(100% - 40px)); padding: 120px 48px 48px; background: #0B0B0B; color: var(--ink); border: 1px solid var(--line-strong); border-radius: 260px 260px 8px 8px; }
+    dialog[open] { display: flex; flex-direction: column; gap: 20px; }
+    dialog::backdrop { background: rgba(0, 0, 0, 0.78); }
+    dialog h2 { font-size: 32px; text-align: center; }
+    dialog .lead { font-size: 19px; line-height: 1.6; }
+    dialog .muted { font-size: 17px; line-height: 1.65; }
+    dialog.center { align-items: center; text-align: center; }
+    dialog .email { font-size: 26px; font-weight: 500; }
+    dialog .socials { display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; }
+    dialog form { display: flex; justify-content: center; margin-top: 8px; }
+    .close { min-height: 44px; padding: 0 24px; border-radius: 999px; border: 1px solid var(--line-strong); background: transparent; color: var(--ink); cursor: pointer; }
+    .close:hover { border-color: var(--ink); }
+    @media (prefers-reduced-motion: no-preference) {
+      dialog[open] { animation: pop .3s cubic-bezier(.25, 1, .5, 1); }
+      @keyframes pop { from { opacity: 0; transform: translateY(16px) } to { opacity: 1; transform: none } }
+    }
+    @media (max-width: 600px) { dialog { padding: 96px 24px 32px; border-radius: 200px 200px 8px 8px; } }
+
+    footer { padding: 24px var(--gutter); border-top: 1px solid var(--line); font-family: var(--mono); font-size: 12px; color: var(--faint); }
+
+    @media (max-width: 600px) {
+      .hero { min-height: 520px; gap: 36px; }
+      .logo { width: 108px; height: 141px; }
+      .logo .body { width: 108px; height: 141px; }
+      .eyes { left: 33px; top: 43px; width: 41px; height: 22px; }
+      .eyes img, .eyes div { width: 41px; height: 22px; }
+      .word { font-size: 40px; }
+      .lockup { gap: 16px; }
+      .wrap { padding-top: 72px; padding-bottom: 72px; }
+      h2 { font-size: 32px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="brand" href="#top">LOST LAB</a>
+    <nav class="mono" aria-label="Main">
+      <a href="#work">Work</a>
+      <button type="button" data-open="about">About</button>
+      <button type="button" data-open="contact">Contact</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="top">
+      <div class="lockup" role="img" aria-label="Lost Lab logo">
+        <div class="logo">
+          <img class="body" src="assets/logo_body.png" alt="">
+          <div class="eyes rise"><div class="blink2"><img class="idle" src="assets/logo_eyes.png" alt=""></div></div>
+        </div>
+        <span class="word" aria-hidden="true">LOST LAB</span>
+      </div>
+      <p class="tagline">A small digital studio in Seattle making games, civic tech, comics and short films.</p>
+    </section>
+
+    <section class="wrap" id="work">
+      <div class="section-head">
+        <h2>Work</h2>
+        <div class="filters" role="group" aria-label="Filter projects">
+          <button type="button" data-filter="All" aria-pressed="true">All <span></span></button>
+          <button type="button" data-filter="Games" aria-pressed="false">Games <span></span></button>
+          <button type="button" data-filter="Civic tech" aria-pressed="false">Civic tech <span></span></button>
+          <button type="button" data-filter="Art &amp; comics" aria-pressed="false">Art &amp; comics <span></span></button>
+          <button type="button" data-filter="Film" aria-pressed="false">Film <span></span></button>
+        </div>
+      </div>
+      <div class="grid">
+        <!-- One card per project. data-cat must match a filter name exactly.
+             Swap [Screenshot] for <img src="assets/your-shot.jpg" alt="..."> -->
+        <a class="card" href="#" data-cat="Games">
+          <div class="thumb">[Screenshot]</div>
+          <span class="card-title">[Game title]</span>
+          <span class="card-meta">Games · [Year]</span>
+        </a>
+        <a class="card" href="#" data-cat="Civic tech">
+          <div class="thumb">[Screenshot]</div>
+          <span class="card-title">[Civic tech project]</span>
+          <span class="card-meta">Civic tech · [Year]</span>
+        </a>
+        <a class="card" href="#" data-cat="Art &amp; comics">
+          <div class="thumb">[Screenshot]</div>
+          <span class="card-title">[Graphic novel]</span>
+          <span class="card-meta">Art &amp; comics · [Year]</span>
+        </a>
+        <a class="card" href="#" data-cat="Film">
+          <div class="thumb">[Screenshot]</div>
+          <span class="card-title">[Short film]</span>
+          <span class="card-meta">Film · [Year]</span>
+        </a>
+        <a class="card" href="#" data-cat="Games">
+          <div class="thumb">[Screenshot]</div>
+          <span class="card-title">[Game title]</span>
+          <span class="card-meta">Games · [Year]</span>
+        </a>
+        <a class="card" href="#" data-cat="Art &amp; comics">
+          <div class="thumb">[Screenshot]</div>
+          <span class="card-title">[Artwork series]</span>
+          <span class="card-meta">Art &amp; comics · [Year]</span>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer>Lost Lab · Seattle</footer>
+
+  <dialog id="about" aria-labelledby="about-title">
+    <h2 id="about-title">About</h2>
+    <p class="lead">Lost Lab is the studio of Alan, an Android developer and game maker in Seattle.</p>
+    <p class="muted">It's where I make games, civic tech, comics and short films as creative lead, using AI as part of the toolkit. Some things here are finished, some are still in the lab.</p>
+    <form method="dialog"><button class="close mono">Close</button></form>
+  </dialog>
+
+  <dialog id="contact" aria-labelledby="contact-title" class="center">
+    <h2 id="contact-title">Say hello</h2>
+    <a class="email" href="mailto:hello@example.com">[your email]</a>
+    <div class="socials mono">
+      <a href="https://github.com/Alan-mag">GitHub</a>
+      <a href="#">[itch.io]</a>
+      <a href="#">[Instagram]</a>
+    </div>
+    <form method="dialog"><button class="close mono">Close</button></form>
+  </dialog>
+
+  <script>
+    // Measure the wordmark like SplashScreen.gd: the logo starts centred,
+    // then the logo + text slide left together until the pair is centred.
+    (function () {
+      const hero = document.querySelector('.hero');
+      const word = hero.querySelector('.word');
+      const lockup = hero.querySelector('.lockup');
+      function measure() {
+        const gap = parseFloat(getComputedStyle(lockup).columnGap) || 24;
+        hero.style.setProperty('--slide', ((word.offsetWidth + gap) / 2) + 'px');
+      }
+      function start() { measure(); hero.classList.add('play'); }
+      const fontsReady = document.fonts ? document.fonts.ready : Promise.resolve();
+      Promise.race([fontsReady, new Promise(r => setTimeout(r, 1500))]).then(start);
+      window.addEventListener('resize', measure);
+    })();
+
+    // Work filters with counts
+    (function () {
+      const cards = [...document.querySelectorAll('.card')];
+      const buttons = [...document.querySelectorAll('.filters button')];
+      buttons.forEach(btn => {
+        const f = btn.dataset.filter;
+        btn.querySelector('span').textContent = f === 'All' ? cards.length : cards.filter(c => c.dataset.cat === f).length;
+        btn.addEventListener('click', () => {
+          buttons.forEach(b => b.setAttribute('aria-pressed', b === btn));
+          cards.forEach(c => { c.hidden = !(f === 'All' || c.dataset.cat === f); });
+        });
+      });
+    })();
+
+    // About / Contact dialogs: open from nav, close with button, Esc, or a click outside
+    document.querySelectorAll('[data-open]').forEach(btn => {
+      btn.addEventListener('click', () => document.getElementById(btn.dataset.open).showModal());
+    });
+    document.querySelectorAll('dialog').forEach(d => {
+      d.addEventListener('click', e => {
+        const r = d.getBoundingClientRect();
+        if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) d.close();
+      });
+    });
+  </script>
+</body>
+</html>
